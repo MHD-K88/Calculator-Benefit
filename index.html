@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Here — Signature Request</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #111318;
+      --paper:     #F7F6F2;
+      --accent:    #2A52BE;
+      --accent-lt: #E8EDFF;
+      --muted:     #6B7280;
+      --border:    #D1D5DB;
+      --success:   #16A34A;
+      --radius:    12px;
+    }
+
+    html { font-size: 16px; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,.07);
+      width: 100%;
+      max-width: 560px;
+      padding: 2.5rem 2rem;
+    }
+
+    .eyebrow {
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .75rem;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: .5rem;
+    }
+
+    .subtitle {
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    /* ── FIELDS ── */
+    .field { margin-bottom: 1.25rem; }
+    label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: .4rem;
+      letter-spacing: .02em;
+    }
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: .65rem .85rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: .95rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--ink);
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-lt);
+    }
+
+    /* ── CANVAS ── */
+    .sig-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: .4rem;
+    }
+    .clear-btn {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      letter-spacing: .02em;
+      transition: color .15s;
+    }
+    .clear-btn:hover { color: var(--ink); }
+
+    .canvas-wrap {
+      position: relative;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #FAFAF8;
+      touch-action: none;
+    }
+    .canvas-wrap::after {
+      content: 'Sign here';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #C8C7C3;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .canvas-wrap.signed::after { opacity: 0; }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 160px;
+      cursor: crosshair;
+    }
+
+    .baseline {
+      position: absolute;
+      bottom: 40px;
+      left: 1.5rem;
+      right: 1.5rem;
+      height: 1px;
+      background: #E5E3DC;
+      pointer-events: none;
+    }
+
+    /* ── BUTTON ── */
+    .submit-btn {
+      margin-top: 1.75rem;
+      width: 100%;
+      padding: .85rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: .01em;
+      transition: background .15s, transform .1s, box-shadow .15s;
+      box-shadow: 0 2px 8px rgba(42,82,190,.3);
+    }
+    .submit-btn:hover { background: #1e3fa3; box-shadow: 0 4px 14px rgba(42,82,190,.4); }
+    .submit-btn:active { transform: scale(.98); }
+    .submit-btn:disabled { background: #9DA9D8; cursor: not-allowed; box-shadow: none; }
+
+    /* ── STATES ── */
+    .msg {
+      display: none;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .msg.show { display: block; }
+
+    .checkmark {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: #DCFCE7;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.6rem;
+    }
+    .msg h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      margin-bottom: .4rem;
+    }
+    .msg p { font-size: .9rem; color: var(--muted); }
+
+    /* ── ERROR ── */
+    .error-note {
+      display: none;
+      margin-top: 1rem;
+      padding: .7rem 1rem;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 8px;
+      font-size: .85rem;
+      color: #DC2626;
+      text-align: center;
+    }
+    .error-note.show { display: block; }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 1.5rem;
+      font-size: .75rem;
+      color: #AEAEAD;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.75rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- FORM VIEW -->
+  <div id="formView">
+    <p class="eyebrow">Signature Request</p>
+    <h1>Please sign below</h1>
+    <!-- ✏️ Edit this subtitle to describe what they're signing -->
+    <p class="subtitle">
+      Your signature confirms your agreement to the terms shared with you.
+      This takes less than a minute.
+    </p>
+
+    <div class="field">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" placeholder="e.g. Sarah Al Mansoori" required />
+    </div>
+
+    <div class="field">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" required />
+    </div>
+
+    <div class="field">
+      <div class="sig-label-row">
+        <label>Signature</label>
+        <button class="clear-btn" onclick="clearCanvas()">Clear</button>
+      </div>
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="sigCanvas"></canvas>
+        <div class="baseline"></div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+      Send Signature
+    </button>
+    <div class="error-note" id="errorNote"></div>
+  </div>
+
+  <!-- SUCCESS VIEW -->
+  <div class="msg" id="successMsg">
+    <div class="checkmark">✓</div>
+    <h2>Signature received</h2>
+    <p>Thank you. Your signature has been sent successfully.</p>
+  </div>
+
+</div>
+
+<p class="footer">Secured · Sent via Web3Forms</p>
+
+<script>
+  // ── Canvas Setup ──────────────────────────────────────────────
+  const canvas = document.getElementById('sigCanvas');
+  const ctx    = canvas.getContext('2d');
+  const wrap   = document.getElementById('canvasWrap');
+  let drawing  = false, hasSig = false;
+
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#111318';
+    ctx.lineWidth   = 2.2;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const src  = e.touches ? e.touches[0] : e;
+    return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+  }
+
+  function startDraw(e) {
+    e.preventDefault();
+    drawing = true;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }
+
+  function draw(e) {
+    e.preventDefault();
+    if (!drawing) return;
+    const p = getPos(e);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    if (!hasSig) { hasSig = true; wrap.classList.add('signed'); }
+  }
+
+  function stopDraw() { drawing = false; }
+
+  canvas.addEventListener('mousedown',  startDraw);
+  canvas.addEventListener('mousemove',  draw);
+  canvas.addEventListener('mouseup',    stopDraw);
+  canvas.addEventListener('mouseleave', stopDraw);
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  canvas.addEventListener('touchmove',  draw,      { passive: false });
+  canvas.addEventListener('touchend',   stopDraw);
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hasSig = false;
+    wrap.classList.remove('signed');
+  }
+
+  window.addEventListener('resize', () => { clearCanvas(); resizeCanvas(); });
+  resizeCanvas();
+
+  // ── Submission ────────────────────────────────────────────────
+  async function submitForm() {
+    const name  = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const err   = document.getElementById('errorNote');
+    const btn   = document.getElementById('submitBtn');
+
+    err.classList.remove('show');
+
+    if (!name)  return showError('Please enter your full name.');
+    if (!email || !email.includes('@')) return showError('Please enter a valid email address.');
+    if (!hasSig) return showError('Please draw your signature above.');
+
+    const sigDataUrl = canvas.toDataURL('image/png');
+
+    btn.disabled    = true;
+    btn.textContent = 'Sending…';
+
+    // ✏️ Replace YOUR_WEB3FORMS_KEY below
+    const WEB3FORMS_KEY = 'a11ae1f7-9495-41f4-b495-7ae0c62843e0';
+
+    const payload = {
+      access_key: WEB3FORMS_KEY,
+      subject:    `New Signature from ${name}`,
+      name:       name,
+      email:      email,
+      signature:  sigDataUrl,
+      timestamp:  new Date().toLocaleString(),
+    };
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('successMsg').classList.add('show');
+      } else {
+        throw new Error(data.message || 'Submission failed.');
+      }
+    } catch (e) {
+      showError('Something went wrong. Please try again. ' + e.message);
+      btn.disabled    = false;
+      btn.textContent = 'Send Signature';
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorNote');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+</script>
+</body>
+</html>
