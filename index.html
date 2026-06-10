@@ -359,16 +359,18 @@
     btn.disabled    = true;
     btn.textContent = 'Sending…';
 
-    // ✏️ Replace YOUR_WEB3FORMS_KEY below
     const WEB3FORMS_KEY = 'a11ae1f7-9495-41f4-b495-7ae0c62843e0';
+    const timestamp = new Date().toLocaleString();
+
+    const htmlBody = `<img src="${sigDataUrl}" alt="Signature" style="display:block;max-width:100%;height:auto;" />`;
 
     const payload = {
-      access_key: WEB3FORMS_KEY,
-      subject:    `New Signature from ${name}`,
-      name:       name,
-      email:      email,
-      signature:  sigDataUrl,
-      timestamp:  new Date().toLocaleString(),
+      access_key:   WEB3FORMS_KEY,
+      subject:      `New Signature from ${name}`,
+      name:         name,
+      email:        email,
+      message:      htmlBody,
+      is_html:      true,
     };
 
     try {
