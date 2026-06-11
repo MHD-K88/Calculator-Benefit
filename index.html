@@ -1,404 +1,871 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="color-scheme: light only;">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Here — Signature Request</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="utf-8" />
+<meta name="color-scheme" content="light" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UAE Final Settlement Calculator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-    :root {
-      --ink:       #111318;
-      --paper:     #F7F6F2;
-      --accent:    #2A52BE;
-      --accent-lt: #E8EDFF;
-      --muted:     #6B7280;
-      --border:    #D1D5DB;
-      --success:   #16A34A;
-      --radius:    12px;
-    }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { font-size: 16px; }
-    body {
-      background: var(--paper);
-      color: var(--ink);
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
+:root {
+  color-scheme: light;
+  --green: #1a6b3c;
+  --green-light: #e8f5ee;
+  --green-mid: #2d8a55;
+  --red: #c0392b;
+  --red-light: #fdf0ee;
+  --amber: #b7651a;
+  --amber-light: #fef6ec;
+  --border: #d8d8d8;
+  --border-strong: #aaa;
+  --bg: #f4f4f2;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --text-muted: #5a5a5a;
+  --text-faint: #8a8a8a;
+  --radius: 6px;
+  --radius-lg: 10px;
+}
 
-    /* ── CARD ── */
-    .card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: 0 4px 24px rgba(0,0,0,.07);
-      width: 100%;
-      max-width: 560px;
-      padding: 2.5rem 2rem;
-    }
+body {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background: #f4f4f2;
+  color: #1a1a1a;
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-    .eyebrow {
-      font-size: .75rem;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: .75rem;
-    }
+/* ── LAYOUT ── */
+.page { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; }
 
-    h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(1.6rem, 5vw, 2.2rem);
-      line-height: 1.2;
-      color: var(--ink);
-      margin-bottom: .5rem;
-    }
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
 
-    .subtitle {
-      font-size: .9rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 2rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 1.5rem;
-    }
+.form-col { display: flex; flex-direction: column; gap: 16px; }
 
-    /* ── FIELDS ── */
-    .field { margin-bottom: 1.25rem; }
-    label {
-      display: block;
-      font-size: .8rem;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: .4rem;
-      letter-spacing: .02em;
-    }
-    input[type="text"], input[type="email"] {
-      width: 100%;
-      padding: .65rem .85rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: .95rem;
-      font-family: 'Inter', sans-serif;
-      color: var(--ink);
-      background: #fff;
-      transition: border-color .15s, box-shadow .15s;
-      outline: none;
-    }
-    input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-lt);
-    }
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.logo-wrap img { max-height: 48px; max-width: 110px; object-fit: contain; }
+.logo-wrap .logo-placeholder {
+  width: 80px; height: 48px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text-faint); text-align: center;
+  line-height: 1.3;
+}
+.header-center { flex: 1; text-align: center; }
+.header-center h1 {
+  font-size: 22px; font-weight: 600; color: var(--green);
+  letter-spacing: -0.3px;
+}
+.header-center p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.header-right { text-align: right; }
+.header-right label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 3px; }
+.header-right input[type="date"] {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
 
-    /* ── CANVAS ── */
-    .sig-label-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: .4rem;
-    }
-    .clear-btn {
-      font-size: .75rem;
-      font-weight: 600;
-      color: var(--muted);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      letter-spacing: .02em;
-      transition: color .15s;
-    }
-    .clear-btn:hover { color: var(--ink); }
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.card-header {
+  background: var(--green);
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.card-body { padding: 16px; }
 
-    .canvas-wrap {
-      position: relative;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: #FAFAF8;
-      touch-action: none;
-    }
-    .canvas-wrap::after {
-      content: 'Sign here';
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'DM Serif Display', serif;
-      font-style: italic;
-      font-size: 1.1rem;
-      color: #C8C7C3;
-      pointer-events: none;
-      transition: opacity .2s;
-    }
-    .canvas-wrap.signed::after { opacity: 0; }
+/* ── FORM ELEMENTS ── */
+.grid { display: grid; gap: 12px; }
+.g2 { grid-template-columns: repeat(2, 1fr); }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g4 { grid-template-columns: repeat(4, 1fr); }
 
-    canvas {
-      display: block;
-      width: 100%;
-      height: 160px;
-      cursor: crosshair;
-    }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.field input,
+.field select,
+.field textarea {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 2px rgba(45,138,85,0.12);
+}
+.field textarea { resize: vertical; font-size: 12px; }
 
-    .baseline {
-      position: absolute;
-      bottom: 40px;
-      left: 1.5rem;
-      right: 1.5rem;
-      height: 1px;
-      background: #E5E3DC;
-      pointer-events: none;
-    }
+.field output,
+.field .out-val {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text);
+  background: var(--bg);
+  display: block;
+  min-height: 36px;
+}
 
-    /* ── BUTTON ── */
-    .submit-btn {
-      margin-top: 1.75rem;
-      width: 100%;
-      padding: .85rem;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      letter-spacing: .01em;
-      transition: background .15s, transform .1s, box-shadow .15s;
-      box-shadow: 0 2px 8px rgba(42,82,190,.3);
-    }
-    .submit-btn:hover { background: #1e3fa3; box-shadow: 0 4px 14px rgba(42,82,190,.4); }
-    .submit-btn:active { transform: scale(.98); }
-    .submit-btn:disabled { background: #9DA9D8; cursor: not-allowed; box-shadow: none; }
+/* ── VALIDATION ── */
+.field input.invalid { border-color: var(--red); }
+.field-error { font-size: 11px; color: var(--red); margin-top: 2px; display: none; }
+.field-error.show { display: block; }
 
-    /* ── STATES ── */
-    .msg {
-      display: none;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    .msg.show { display: block; }
+/* ── ALERT BANNERS ── */
+.alert {
+  display: none;
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  border-left: 3px solid;
+}
+.alert.show { display: block; }
+.alert-warn { background: var(--amber-light); color: var(--amber); border-color: var(--amber); }
+.alert-error { background: var(--red-light); color: var(--red); border-color: var(--red); }
 
-    .checkmark {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: #DCFCE7;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1rem;
-      font-size: 1.6rem;
-    }
-    .msg h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.5rem;
-      margin-bottom: .4rem;
-    }
-    .msg p { font-size: .9rem; color: var(--muted); }
+/* ── NOTE TEXT ── */
+.note { font-size: 11px; color: var(--text-faint); margin-top: 8px; line-height: 1.5; }
 
-    /* ── ERROR ── */
-    .error-note {
-      display: none;
-      margin-top: 1rem;
-      padding: .7rem 1rem;
-      background: #FEF2F2;
-      border: 1px solid #FECACA;
-      border-radius: 8px;
-      font-size: .85rem;
-      color: #DC2626;
-      text-align: center;
-    }
-    .error-note.show { display: block; }
+/* ── STICKY SUMMARY ── */
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: sticky;
+  top: 20px;
+}
+.summary-header {
+  background: var(--green);
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.net-block {
+  background: var(--green-light);
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.net-label { font-size: 11px; font-weight: 600; color: var(--green); letter-spacing: 0.06em; text-transform: uppercase; }
+.net-amount {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--green);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-top: 4px;
+  letter-spacing: -0.5px;
+}
+.net-currency { font-size: 14px; font-weight: 400; }
 
-    /* ── FOOTER ── */
-    .footer {
-      margin-top: 1.5rem;
-      font-size: .75rem;
-      color: #AEAEAD;
-      text-align: center;
-    }
+.tenure-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.chip {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+}
+.chip-label { font-size: 10px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+.chip-val { font-size: 13px; font-weight: 600; color: var(--text); font-family: 'IBM Plex Mono', monospace; margin-top: 2px; }
 
-    @media (max-width: 480px) {
-      .card { padding: 1.75rem 1.25rem; }
-    }
-  </style>
+.sum-rows { padding: 10px 16px; }
+.sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 12.5px;
+}
+.sum-row:last-child { border-bottom: none; }
+.sum-row .slbl { color: var(--text-muted); }
+.sum-row .sval { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); }
+.sum-row.deduction .sval { color: var(--red); }
+.sum-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 16px;
+  border-top: 1.5px solid var(--green);
+  font-weight: 600;
+  font-size: 13px;
+}
+.sum-total .sval { font-family: 'IBM Plex Mono', monospace; }
+
+.btn-print {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 12px 16px 16px;
+  padding: 9px;
+  border: 1px solid var(--green);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-print:hover { background: var(--green); color: #fff; }
+
+/* ── SIGNATURE ── */
+.signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 0 4px;
+}
+.sig {
+  width: 44%;
+  text-align: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-strong);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── PRINT ── */
+@media print {
+  body { background: #fff; font-size: 12px; }
+  .page { padding: 0; max-width: 100%; }
+  .layout { grid-template-columns: 1fr; }
+  .summary-card { position: static; border: 1px solid #ccc; }
+  .btn-print { display: none; }
+  header { border: 1px solid #ccc; }
+  .card, .summary-card { page-break-inside: avoid; }
+  .field input, .field select, .field textarea { background: #fff !important; }
+  .field output, .field .out-val { background: #f8f8f8 !important; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .summary-card { position: static; }
+  .g4 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .g2, .g3, .g4 { grid-template-columns: 1fr; }
+  header { flex-direction: column; text-align: center; }
+  .header-right { text-align: center; }
+}
+</style>
 </head>
 <body>
+<div class="page">
 
-<div class="card">
-
-  <!-- FORM VIEW -->
-  <div id="formView">
-    <p class="eyebrow">Signature Request</p>
-    <h1>Please sign below</h1>
-    <!-- ✏️ Edit this subtitle to describe what they're signing -->
-    <p class="subtitle">
-      Your signature confirms your agreement to the terms shared with you.
-      This takes less than a minute.
-    </p>
-
-    <div class="field">
-      <label for="fullName">Full Name</label>
-      <input type="text" id="fullName" placeholder="e.g. Sarah Al Mansoori" required />
+  <!-- HEADER -->
+  <header>
+    <div class="logo-wrap">
+      <img src="company-logo.png" alt="Company Logo"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+      <div class="logo-placeholder" style="display:none;">Company<br>Logo</div>
     </div>
-
-    <div class="field">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" placeholder="you@example.com" required />
+    <div class="header-center">
+      <h1>UAE Final Settlement Calculator</h1>
+      <p>End of service gratuity &amp; settlement — based on UAE Labour Law (Federal Decree-Law No. 33 of 2021)</p>
     </div>
+    <div class="header-right">
+      <label for="docDate">Date</label>
+      <input type="date" id="docDate" />
+    </div>
+  </header>
 
-    <div class="field">
-      <div class="sig-label-row">
-        <label>Signature</label>
-        <button class="clear-btn" onclick="clearCanvas()">Clear</button>
+  <div class="layout">
+    <div class="form-col">
+
+      <!-- EMPLOYEE DETAILS -->
+      <div class="card">
+        <div class="card-header">Employee Details</div>
+        <div class="card-body">
+          <div class="grid g2">
+            <div class="field">
+              <label>Employee No.</label>
+              <input type="text" id="empNo" placeholder="e.g. EMP-00001" />
+            </div>
+            <div class="field">
+              <label>Employee Name</label>
+              <input type="text" id="empName" placeholder="Full name" />
+            </div>
+            <div class="field">
+              <label>Date of Joining</label>
+              <input type="date" id="doj" />
+              <span class="field-error" id="err-doj">Date of joining cannot be after last working date.</span>
+            </div>
+            <div class="field">
+              <label>Designation</label>
+              <input type="text" id="designation" placeholder="Job title" />
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="canvas-wrap" id="canvasWrap">
-        <canvas id="sigCanvas"></canvas>
-        <div class="baseline"></div>
+
+      <!-- SALARY INFORMATION -->
+      <div class="card">
+        <div class="card-header">Salary Information</div>
+        <div class="card-body">
+          <div class="alert alert-error" id="alert-salary">Basic salary must be greater than zero to calculate gratuity.</div>
+          <div class="grid g2">
+            <div class="field">
+              <label>Basic Salary (AED / month)</label>
+              <input type="number" id="basicSalary" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Allowances (AED / month)</label>
+              <input type="number" id="allowances" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Housing (AED / month)</label>
+              <input type="number" id="housing" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Transportation (AED / month)</label>
+              <input type="number" id="transportation" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Fixed Overtime Allowance (AED / month)</label>
+              <input type="number" id="overtime" min="0" step="0.01" value="0" />
+            </div>
+          </div>
+          <div class="grid g2" style="margin-top:12px;">
+            <div class="field">
+              <label>Monthly Gross (Basic + All Allowances)</label>
+              <output id="grossSalary" class="out-val">AED 0.00</output>
+            </div>
+            <div class="field">
+              <label>Daily Basic (Basic ÷ 30)</label>
+              <output id="dailyBasic" class="out-val">AED 0.00</output>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- SEPARATION -->
+      <div class="card">
+        <div class="card-header">Separation</div>
+        <div class="card-body">
+          <div class="alert alert-warn" id="alert-dates"></div>
+          <div class="grid g2">
+            <div class="field">
+              <label>Separation Type</label>
+              <select id="separationType">
+                <option value="Termination">Termination</option>
+                <option value="Resignation">Resignation</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Separation Date</label>
+              <input type="date" id="separationDate" />
+            </div>
+            <div class="field">
+              <label>Last Working Date</label>
+              <input type="date" id="lastWorkingDate" />
+            </div>
+            <div class="field">
+              <label>Unpaid Leave Days</label>
+              <input type="number" id="unpaidDays" min="0" step="1" value="0" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE TENURE & GRATUITY -->
+      <div class="card">
+        <div class="card-header">Service Tenure &amp; Gratuity</div>
+        <div class="card-body">
+          <div class="grid g4">
+            <div class="field">
+              <label>Service Days</label>
+              <output id="serviceDays" class="out-val">0</output>
+            </div>
+            <div class="field">
+              <label>Net Service Days</label>
+              <output id="netServiceDays" class="out-val">0</output>
+            </div>
+            <div class="field">
+              <label>Service Tenure</label>
+              <output id="years" class="out-val">0Y 0M 0D</output>
+            </div>
+            <div class="field">
+              <label>Notice Period Days</label>
+              <output id="noticeDays" class="out-val">0</output>
+            </div>
+          </div>
+          <div class="grid g3" style="margin-top:12px;">
+            <div class="field">
+              <label>Daily Gross (for leave pay)</label>
+              <output id="dailyGross" class="out-val">AED 0.00</output>
+            </div>
+            <div class="field">
+              <label>Gratuity Entitlement (Days)</label>
+              <output id="gratuityDays" class="out-val">0</output>
+            </div>
+            <div class="field">
+              <label>Total Gratuity (Before Cap)</label>
+              <output id="gratuityAmountRaw" class="out-val">AED 0.00</output>
+            </div>
+            <div class="field">
+              <label>Cap (24 × Basic Salary)</label>
+              <output id="capAmount" class="out-val">AED 0.00</output>
+            </div>
+            <div class="field">
+              <label>Final Gratuity Pay</label>
+              <output id="finalGratuity" class="out-val" style="font-weight:600; color:var(--green);">AED 0.00</output>
+            </div>
+          </div>
+          <p class="note">
+            Gratuity basis: 21 days' basic salary per year for first 5 years; 30 days per year from year 6 onwards.
+            Capped at 24× monthly basic salary. Calculated on net service days (excluding unpaid leave).
+          </p>
+        </div>
+      </div>
+
+      <!-- NOTICE PERIOD PAY -->
+      <div class="card">
+        <div class="card-header">Notice Period Pay</div>
+        <div class="card-body">
+          <div class="grid g2">
+            <div class="field">
+              <label>Notice Period Pay / (Deduction) (AED)</label>
+              <input type="number" id="noticePay" step="0.01" value="0"
+                placeholder="Positive = owed to employee; Negative = deduction" />
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="noticePayDesc" rows="2" placeholder="e.g. 30 days notice pay owed / waived"></textarea>
+            </div>
+          </div>
+          <p class="note">Enter a positive value if the company owes the employee notice pay. Enter a negative value if the employee owes the company (e.g. did not serve notice period).</p>
+        </div>
+      </div>
+
+      <!-- LEAVE BALANCE -->
+      <div class="card">
+        <div class="card-header">Leave Balance</div>
+        <div class="card-body">
+          <div class="grid g2">
+            <div class="field">
+              <label>Leave Balance Eligible Days</label>
+              <input type="number" id="leaveEligibleDays" min="0" step="0.5" value="0" />
+            </div>
+            <div class="field">
+              <label>Leave Balance Amount</label>
+              <output id="leaveAmount" class="out-val">AED 0.00</output>
+            </div>
+          </div>
+          <p class="note">First 30 days calculated at daily gross rate; days above 30 calculated at daily basic rate.</p>
+        </div>
+      </div>
+
+      <!-- OTHER ITEMS -->
+      <div class="card">
+        <div class="card-header">Other Items</div>
+        <div class="card-body">
+          <div class="grid g2" style="margin-bottom:12px;">
+            <div class="field">
+              <label>Pending Salary (AED)</label>
+              <input type="number" id="pendingSalary" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="pendingSalaryDesc" rows="2" placeholder="Optional description"></textarea>
+            </div>
+          </div>
+          <div class="grid g2" style="margin-bottom:12px;">
+            <div class="field">
+              <label>Airfare / Repatriation (AED)</label>
+              <input type="number" id="airfare" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="airfareDesc" rows="2" placeholder="e.g. Return flight to home country"></textarea>
+            </div>
+          </div>
+          <div class="grid g2" style="margin-bottom:12px;">
+            <div class="field">
+              <label>Other Reimbursements (AED)</label>
+              <input type="number" id="otherReimb" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="otherReimbDesc" rows="2" placeholder="Optional description"></textarea>
+            </div>
+          </div>
+          <div class="grid g2" style="margin-bottom:12px;">
+            <div class="field">
+              <label>Loans / Advances — Deduction (AED)</label>
+              <input type="number" id="loans" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <div style="height:36px;"></div>
+            </div>
+          </div>
+          <div class="grid g2">
+            <div class="field">
+              <label>Other Deductions (AED)</label>
+              <input type="number" id="otherDeduction" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="otherDeductionDesc" rows="2" placeholder="Optional description"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIGNATURES (print only useful) -->
+      <div class="signatures">
+        <div class="sig">HR Manager</div>
+        <div class="sig">Employee</div>
+      </div>
+
+    </div><!-- /form-col -->
+
+    <!-- STICKY SUMMARY -->
+    <div class="summary-card">
+      <div class="summary-header">Final Settlement Summary</div>
+
+      <div class="net-block">
+        <div class="net-label">Net Payable</div>
+        <div class="net-amount"><span class="net-currency">AED </span><span id="netPayableDisplay">0.00</span></div>
+      </div>
+
+      <div class="tenure-chips">
+        <div class="chip">
+          <div class="chip-label">Service tenure</div>
+          <div class="chip-val" id="chipTenure">—</div>
+        </div>
+        <div class="chip">
+          <div class="chip-label">Gratuity days</div>
+          <div class="chip-val" id="chipGratDays">—</div>
+        </div>
+      </div>
+
+      <div class="sum-rows">
+        <div class="sum-row">
+          <span class="slbl">Gratuity</span>
+          <span class="sval" id="sumGratuity">AED 0.00</span>
+        </div>
+        <div class="sum-row">
+          <span class="slbl">Leave balance</span>
+          <span class="sval" id="sumLeave">AED 0.00</span>
+        </div>
+        <div class="sum-row">
+          <span class="slbl">Notice period pay</span>
+          <span class="sval" id="sumNoticePay">AED 0.00</span>
+        </div>
+        <div class="sum-row">
+          <span class="slbl">Pending salary</span>
+          <span class="sval" id="sumPendingSalary">AED 0.00</span>
+        </div>
+        <div class="sum-row">
+          <span class="slbl">Airfare / repatriation</span>
+          <span class="sval" id="sumAirfare">AED 0.00</span>
+        </div>
+        <div class="sum-row">
+          <span class="slbl">Other reimbursements</span>
+          <span class="sval" id="sumOtherReimb">AED 0.00</span>
+        </div>
+        <div class="sum-row deduction">
+          <span class="slbl">Loans / advances</span>
+          <span class="sval" id="sumLoans">− AED 0.00</span>
+        </div>
+        <div class="sum-row deduction">
+          <span class="slbl">Other deductions</span>
+          <span class="sval" id="sumOtherDeduction">− AED 0.00</span>
+        </div>
+      </div>
+
+      <div class="sum-total">
+        <span>Net Payable</span>
+        <span class="sval" id="netPayable">AED 0.00</span>
+      </div>
+
+      <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
     </div>
 
-    <button class="submit-btn" id="submitBtn" onclick="submitForm()">
-      Send Signature
-    </button>
-    <div class="error-note" id="errorNote"></div>
-  </div>
-
-  <!-- SUCCESS VIEW -->
-  <div class="msg" id="successMsg">
-    <div class="checkmark">✓</div>
-    <h2>Signature received</h2>
-    <p>Thank you. Your signature has been sent successfully.</p>
-  </div>
-
-</div>
-
-<p class="footer">Secured · Sent via Web3Forms</p>
+  </div><!-- /layout -->
+</div><!-- /page -->
 
 <script>
-  // ── Canvas Setup ──────────────────────────────────────────────
-  const canvas = document.getElementById('sigCanvas');
-  const ctx    = canvas.getContext('2d');
-  const wrap   = document.getElementById('canvasWrap');
-  let drawing  = false, hasSig = false;
+document.addEventListener('DOMContentLoaded', () => {
 
-  function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width  = rect.width  * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.strokeStyle = '#111318';
-    ctx.lineWidth   = 2.2;
-    ctx.lineCap     = 'round';
-    ctx.lineJoin    = 'round';
+  /* ── HELPERS ── */
+  function parseDateSafe(id) {
+    const val = document.getElementById(id).value;
+    if (!val) return null;
+    const d = new Date(val);
+    return isNaN(d) ? null : d;
   }
 
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const src  = e.touches ? e.touches[0] : e;
-    return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+  function num(id) {
+    const el = document.getElementById(id);
+    return el ? parseFloat(el.value || '0') : 0;
   }
 
-  function startDraw(e) {
-    e.preventDefault();
-    drawing = true;
-    const p = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
+  function fmtAED(val) {
+    return 'AED ' + Math.abs(val).toLocaleString('en-AE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 
-  function draw(e) {
-    e.preventDefault();
-    if (!drawing) return;
-    const p = getPos(e);
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-    if (!hasSig) { hasSig = true; wrap.classList.add('signed'); }
-  }
-
-  function stopDraw() { drawing = false; }
-
-  canvas.addEventListener('mousedown',  startDraw);
-  canvas.addEventListener('mousemove',  draw);
-  canvas.addEventListener('mouseup',    stopDraw);
-  canvas.addEventListener('mouseleave', stopDraw);
-  canvas.addEventListener('touchstart', startDraw, { passive: false });
-  canvas.addEventListener('touchmove',  draw,      { passive: false });
-  canvas.addEventListener('touchend',   stopDraw);
-
-  function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    hasSig = false;
-    wrap.classList.remove('signed');
-  }
-
-  window.addEventListener('resize', () => { clearCanvas(); resizeCanvas(); });
-  resizeCanvas();
-
-  // ── Submission ────────────────────────────────────────────────
-  async function submitForm() {
-    const name  = document.getElementById('fullName').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const err   = document.getElementById('errorNote');
-    const btn   = document.getElementById('submitBtn');
-
-    err.classList.remove('show');
-
-    if (!name)  return showError('Please enter your full name.');
-    if (!email || !email.includes('@')) return showError('Please enter a valid email address.');
-    if (!hasSig) return showError('Please draw your signature above.');
-
-    const sigDataUrl = canvas.toDataURL('image/png');
-
-    btn.disabled    = true;
-    btn.textContent = 'Sending…';
-
-    const WEB3FORMS_KEY = 'a11ae1f7-9495-41f4-b495-7ae0c62843e0';
-    const timestamp = new Date().toLocaleString();
-
-    const htmlBody = `<img src="${sigDataUrl}" alt="Signature" style="display:block;max-width:100%;height:auto;" />`;
-
-    const payload = {
-      access_key:   WEB3FORMS_KEY,
-      subject:      `New Signature from ${name}`,
-      name:         name,
-      email:        email,
-      message:      htmlBody,
-      is_html:      true,
-    };
-
-    try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body:    JSON.stringify(payload),
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        document.getElementById('formView').style.display = 'none';
-        document.getElementById('successMsg').classList.add('show');
-      } else {
-        throw new Error(data.message || 'Submission failed.');
-      }
-    } catch (e) {
-      showError('Something went wrong. Please try again. ' + e.message);
-      btn.disabled    = false;
-      btn.textContent = 'Send Signature';
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (typeof val === 'number') {
+      el.textContent = fmtAED(val);
+    } else {
+      el.textContent = val ?? '';
     }
   }
 
-  function showError(msg) {
-    const el = document.getElementById('errorNote');
-    el.textContent = msg;
-    el.classList.add('show');
+  function setRaw(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val ?? '';
   }
+
+  function daysInclusive(start, end) {
+    if (!start || !end) return 0;
+    return Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+  }
+
+  function convertDaysToYMD(totalDays) {
+    const d = Math.max(0, totalDays);
+    const years = Math.floor(d / 365);
+    const remaining = d % 365;
+    const months = Math.floor(remaining / 30);
+    const days = remaining % 30;
+    return `${years}Y ${months}M ${days}D`;
+  }
+
+  /* ── MAIN CALC ── */
+  function calc() {
+
+    /* --- SALARY --- */
+    const basic = num('basicSalary');
+    const allow = num('allowances');
+    const housing = num('housing');
+    const transport = num('transportation');
+    const overtime = num('overtime');
+
+    const gross = basic + allow + housing + transport + overtime;
+    setRaw('grossSalary', fmtAED(gross));
+
+    const dailyBasic = basic / 30;
+    const dailyGross = (basic + allow + housing + transport) / 30;
+
+    setRaw('dailyBasic', fmtAED(dailyBasic));
+    setRaw('dailyGross', fmtAED(dailyGross));
+
+    /* salary alert */
+    const alertSalary = document.getElementById('alert-salary');
+    if (basic <= 0) {
+      alertSalary.classList.add('show');
+    } else {
+      alertSalary.classList.remove('show');
+    }
+
+    /* --- DATES & SERVICE --- */
+    const doj  = parseDateSafe('doj');
+    const sep  = parseDateSafe('separationDate');
+    const last = parseDateSafe('lastWorkingDate');
+
+    /* date validation */
+    const alertDates = document.getElementById('alert-dates');
+    const errDoj = document.getElementById('err-doj');
+    let dateWarn = '';
+
+    if (doj && last && last < doj) {
+      dateWarn = 'Last working date is before date of joining — please check the dates.';
+      document.getElementById('lastWorkingDate').classList.add('invalid');
+      errDoj.classList.add('show');
+    } else {
+      document.getElementById('lastWorkingDate').classList.remove('invalid');
+      errDoj.classList.remove('show');
+    }
+
+    if (sep && last && last < sep) {
+      dateWarn += (dateWarn ? ' ' : '') + 'Last working date is before separation date.';
+    }
+
+    if (dateWarn) {
+      alertDates.textContent = dateWarn;
+      alertDates.classList.add('show');
+    } else {
+      alertDates.classList.remove('show');
+    }
+
+    const serviceDays = daysInclusive(doj, last);
+    const noticeDays  = daysInclusive(sep, last);
+    const unpaid      = num('unpaidDays');
+    const netServiceDays = Math.max(0, serviceDays - unpaid);
+
+    setRaw('serviceDays', serviceDays);
+    setRaw('noticeDays', noticeDays);
+    setRaw('netServiceDays', netServiceDays);
+    setRaw('years', convertDaysToYMD(netServiceDays));
+
+    /* chips */
+    document.getElementById('chipTenure').textContent = convertDaysToYMD(netServiceDays);
+
+    /* --- GRATUITY (logic unchanged) --- */
+    const yearsDecimal = netServiceDays / 365;
+
+    let gratuityDays = 0;
+    if (yearsDecimal >= 1) {
+      const firstFive  = Math.min(5, yearsDecimal);
+      const remaining  = Math.max(0, yearsDecimal - 5);
+      gratuityDays = (firstFive * 21) + (remaining * 30);
+    }
+
+    setRaw('gratuityDays', gratuityDays.toFixed(2));
+    document.getElementById('chipGratDays').textContent = gratuityDays.toFixed(2);
+
+    const gratuityAmountRaw = gratuityDays * dailyBasic; /* before cap — stored separately */
+    const cap = basic * 24;
+    const gratuityAmount = Math.min(gratuityAmountRaw, cap);
+
+    setRaw('gratuityAmountRaw', fmtAED(gratuityAmountRaw)); /* shows true pre-cap figure */
+    setRaw('capAmount', fmtAED(cap));
+    setRaw('finalGratuity', fmtAED(gratuityAmount));
+
+    /* --- LEAVE BALANCE (logic unchanged) --- */
+    const leaveDays = num('leaveEligibleDays');
+    let leaveAmount = 0;
+    if (leaveDays <= 30) {
+      leaveAmount = leaveDays * dailyGross;
+    } else {
+      leaveAmount = (30 * dailyGross) + ((leaveDays - 30) * dailyBasic);
+    }
+    setRaw('leaveAmount', fmtAED(leaveAmount));
+
+    /* --- OTHER ITEMS --- */
+    const noticePay     = num('noticePay');      /* can be negative */
+    const pendingSalary = num('pendingSalary');
+    const airfare       = num('airfare');
+    const otherReimb    = num('otherReimb');
+    const loans         = num('loans');
+    const otherDeduction = num('otherDeduction');
+
+    /* --- SUMMARY --- */
+    setText('sumGratuity', gratuityAmount);
+    setText('sumLeave', leaveAmount);
+
+    /* notice pay: show with sign */
+    const noticeEl = document.getElementById('sumNoticePay');
+    if (noticePay < 0) {
+      noticeEl.textContent = '− ' + fmtAED(noticePay);
+      noticeEl.closest('.sum-row').classList.add('deduction');
+    } else {
+      noticeEl.textContent = fmtAED(noticePay);
+      noticeEl.closest('.sum-row').classList.remove('deduction');
+    }
+
+    setText('sumPendingSalary', pendingSalary);
+    setText('sumAirfare', airfare);
+    setText('sumOtherReimb', otherReimb);
+
+    const loansEl = document.getElementById('sumLoans');
+    loansEl.textContent = loans > 0 ? '− ' + fmtAED(loans) : fmtAED(0);
+
+    const dedEl = document.getElementById('sumOtherDeduction');
+    dedEl.textContent = otherDeduction > 0 ? '− ' + fmtAED(otherDeduction) : fmtAED(0);
+
+    const netPayable =
+      gratuityAmount +
+      leaveAmount +
+      noticePay +
+      pendingSalary +
+      airfare +
+      otherReimb -
+      loans -
+      otherDeduction;
+
+    const netFmt = netPayable.toLocaleString('en-AE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    document.getElementById('netPayable').textContent = 'AED ' + netFmt;
+    document.getElementById('netPayableDisplay').textContent = netFmt;
+
+    /* colour net if negative */
+    const netBlock = document.querySelector('.net-amount');
+    netBlock.style.color = netPayable < 0 ? 'var(--red)' : 'var(--green)';
+  }
+
+  /* ── LISTENERS ── */
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('input', calc);
+    el.addEventListener('change', calc);
+  });
+
+  calc();
+
+  document.getElementById('docDate').valueAsDate = new Date();
+});
 </script>
 </body>
 </html>
